@@ -3,23 +3,19 @@ let contador = 0;
 let paleta;
 
 function setup() {
-    colorMode(HSB);
     createCanvas(windowWidth, windowHeight);
+    colorMode(HSB);
     ellipseMode(RADIUS);
-    paleta = new Paleta(random(360), ceil(random(6)));
-    console.log(paleta.hue);
-    console.log(paleta.cant);
+    paleta = nuevaPaleta();
 }
 
 function draw() {
-    //console.log(circulos.length);
     background(50);
-    noStroke();
+    //noStroke();
     fill(52, 19, 70);
+    stroke(52, 19, 70);
     rect(30, 30, width - 60, height - 60);
     noFill();
-    //fill(random(360), random(50, 100), 54);
-    //stroke(255);
 
     let circulo = nuevoCirculo();
     if (circulo != null) {
@@ -27,27 +23,26 @@ function draw() {
         contador = 0;
     } else {
         contador++;
-        //console.log(contador);
         if (contador > 750) {
-            //noLoop();
-            paleta = new Paleta(random(360), ceil(random(6)));
+            paleta = nuevaPaleta();
             circulos = [];
-            console.log("FIN");
         }
     }
+    lineas();
     for (let i = 0; i < circulos.length; i++) {
         circulos[i].dibuja();
     }
     chequeaCrecimiento();
 }
 
+// Paleta
+function nuevaPaleta() {
+    return new Paleta(random(360), ceil(random(6)));
+}
+
 // Circulo / null
 function nuevoCirculo() {
-    //let centro = createVector(mouseX, mouseY);
-    let centro = createVector(
-        random(width * 0.05 + 30, width * 0.95 - 30),
-        random(height * 0.05 + 30, height * 0.95 - 30)
-    );
+    let centro = createVector(random(45, width - 45), random(45, height - 45));
     let valido = true;
     valido = esElNuevoCirculoValido(centro);
 
@@ -55,7 +50,7 @@ function nuevoCirculo() {
         ? new Circulo(
               centro.x,
               centro.y,
-              1,
+              2,
               random(paleta.coloresPorCantidad())
           )
         : null;
@@ -64,11 +59,28 @@ function nuevoCirculo() {
 // boolean
 function esElNuevoCirculoValido(centroNuevoCirculo) {
     for (let circulo of circulos) {
-        if (centroNuevoCirculo.dist(circulo.centro) <= circulo.r + 10) {
+        if (centroNuevoCirculo.dist(circulo.centro) <= circulo.r + 5) {
             return false;
         }
     }
     return true;
+}
+
+//void
+function lineas() {
+    let centroAnterior = createVector(0, 0);
+    stroke(0, 100, 0, 0.1);
+    for (let circulo of circulos) {
+        if (centroAnterior.x != 0) {
+            line(
+                circulo.centro.x,
+                circulo.centro.y,
+                centroAnterior.x,
+                centroAnterior.y
+            );
+        }
+        centroAnterior.set(circulo.centro.x, circulo.centro.y);
+    }
 }
 
 // void
@@ -89,10 +101,8 @@ function chequeaCrecimiento() {
 }
 
 class Paleta {
-    coloresDeLaPaleta = [];
     constructor(hue, cant) {
         this.hue = floor(hue);
-        this.coloresDeLaPaleta = this.coloresPorCantidad(cant);
         this.cant = cant;
     }
 
@@ -126,58 +136,7 @@ class Paleta {
         color.push(this.entre360(floor(random(angulo - 10, angulo + 10))));
         color.push(floor(random(50, 100)));
         color.push(floor(random(35, 55)));
-        //console.log(color);
         return color;
-    }
-
-    // color HSB
-    colorPrimario() {
-        let color = [];
-        color.push(random(this.hue - 5, this.hue + 5));
-        color.push(random(50, 100));
-        color.push(random(35, 45));
-        //console.log(color);
-        return color;
-    }
-
-    // color HSB
-    colorSecundario() {
-        let color = [];
-        color.push(random(this.hue + 15, this.hue + 25));
-        color.push(random(50, 100));
-        color.push(random(35, 45));
-        //console.log(color);
-        return color;
-    }
-
-    // color HSB
-    colorTerciario() {
-        let color = [];
-        color.push(random(this.hue - 15, this.hue - 25));
-        color.push(random(50, 100));
-        color.push(random(35, 45));
-        //console.log(color);
-        return color;
-    }
-
-    // color HSB
-    colorOpuesto() {
-        let color = [];
-        color.push(random(this.hueMasAngulo(170), this.hueMasAngulo(190)));
-        color.push(random(50, 100));
-        color.push(random(35, 45));
-        //console.log(color);
-        return color;
-    }
-
-    // array colores HSB
-    colores() {
-        let colores = [];
-        colores.push(this.colorPrimario());
-        colores.push(this.colorSecundario());
-        colores.push(this.colorTerciario());
-        colores.push(this.colorOpuesto());
-        return colores;
     }
 }
 
@@ -190,13 +149,13 @@ class Circulo {
         this.centro = createVector();
         this.centro.set(x, y);
         this.creciendo = true;
-        //this.colorRelleno = [random(360), random(50, 100), 40];
         this.colorRelleno = color;
     }
 
     // display
     dibuja() {
         fill(this.colorRelleno);
+        stroke(this.colorRelleno);
         ellipse(this.x, this.y, this.r - 1);
         this.crece();
     }
@@ -221,5 +180,5 @@ class Circulo {
 
 function mousePressed() {
     circulos = [];
-    paleta = new Paleta(random(360), ceil(random(6)));
+    paleta = nuevaPaleta();
 }
