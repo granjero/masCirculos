@@ -69,9 +69,15 @@ function esElNuevoCirculoValido(centroNuevoCirculo) {
 //void
 function lineas() {
     let centroAnterior = createVector(0, 0);
-    stroke(0, 100, 0, 0.1);
+    //stroke(0, 100, 0, 0.03);
     for (let circulo of circulos) {
         if (centroAnterior.x != 0) {
+            stroke(
+                circulo.colorRelleno[0],
+                circulo.colorRelleno[1],
+                circulo.colorRelleno[2],
+                0.05
+            );
             line(
                 circulo.centro.x,
                 circulo.centro.y,
