@@ -6,8 +6,9 @@ function setup() {
     colorMode(HSB);
     createCanvas(windowWidth, windowHeight);
     ellipseMode(RADIUS);
-    paleta = new Paleta(random(360), 2);
+    paleta = new Paleta(random(360), ceil(random(6)));
     console.log(paleta.hue);
+    console.log(paleta.cant);
 }
 
 function draw() {
@@ -27,8 +28,10 @@ function draw() {
     } else {
         contador++;
         //console.log(contador);
-        if (contador > 1000) {
-            noLoop();
+        if (contador > 750) {
+            //noLoop();
+            paleta = new Paleta(random(360), ceil(random(6)));
+            circulos = [];
             console.log("FIN");
         }
     }
@@ -42,8 +45,8 @@ function draw() {
 function nuevoCirculo() {
     //let centro = createVector(mouseX, mouseY);
     let centro = createVector(
-        random(width * 0.05, width * 0.95),
-        random(height * 0.05, height * 0.95)
+        random(width * 0.05 + 30, width * 0.95 - 30),
+        random(height * 0.05 + 30, height * 0.95 - 30)
     );
     let valido = true;
     valido = esElNuevoCirculoValido(centro);
@@ -208,14 +211,15 @@ class Circulo {
     // boolean
     llegoAlBorde() {
         return (
-            this.x + this.r >= width * 0.95 ||
-            this.x - this.r <= width * 0.05 ||
-            this.y + this.r >= height * 0.95 ||
-            this.y - this.r <= height * 0.05
+            this.x + this.r >= width - 45 ||
+            this.x - this.r <= 45 ||
+            this.y + this.r >= height - 45 ||
+            this.y - this.r <= 45
         );
     }
 }
 
 function mousePressed() {
     circulos = [];
+    paleta = new Paleta(random(360), ceil(random(6)));
 }
