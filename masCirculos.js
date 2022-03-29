@@ -6,7 +6,8 @@ function setup() {
     colorMode(HSB);
     createCanvas(windowWidth, windowHeight);
     ellipseMode(RADIUS);
-    paleta = new Paleta(random(360));
+    paleta = new Paleta(random(360), 2);
+    console.log(paleta.hue);
 }
 
 function draw() {
@@ -48,7 +49,12 @@ function nuevoCirculo() {
     valido = esElNuevoCirculoValido(centro);
 
     return valido
-        ? new Circulo(centro.x, centro.y, 1, random(paleta.colores()))
+        ? new Circulo(
+              centro.x,
+              centro.y,
+              1,
+              random(paleta.coloresPorCantidad())
+          )
         : null;
 }
 
@@ -80,8 +86,11 @@ function chequeaCrecimiento() {
 }
 
 class Paleta {
-    constructor(hue) {
+    coloresDeLaPaleta = [];
+    constructor(hue, cant) {
         this.hue = floor(hue);
+        this.coloresDeLaPaleta = this.coloresPorCantidad(cant);
+        this.cant = cant;
     }
 
     // int 0 - 360
@@ -89,6 +98,33 @@ class Paleta {
         let resultante = floor(angulo + this.hue);
         //console.log(resultante);
         return resultante <= 360 ? resultante : resultante - 360;
+    }
+
+    entre360(angulo) {
+        return angulo <= 360 ? angulo : angulo - 360;
+    }
+
+    //
+    coloresPorCantidad() {
+        let colores = [];
+        let hueAngular = this.hue;
+        let angulo = floor(360 / this.cant);
+        for (let i = 0; i < this.cant; i++) {
+            colores.push(this.colorHue(hueAngular));
+            hueAngular += angulo;
+            hueAngular = this.entre360(hueAngular);
+        }
+        return colores;
+    }
+
+    // color HSB
+    colorHue(angulo) {
+        let color = [];
+        color.push(this.entre360(floor(random(angulo - 10, angulo + 10))));
+        color.push(floor(random(50, 100)));
+        color.push(floor(random(35, 55)));
+        //console.log(color);
+        return color;
     }
 
     // color HSB
