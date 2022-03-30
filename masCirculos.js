@@ -11,28 +11,33 @@ function setup() {
 
 function draw() {
     background(50);
+    console.log(circulos.length);
+
     //noStroke();
+
+    // bastidor
     fill(52, 19, 70);
     stroke(52, 19, 70);
     rect(30, 30, width - 60, height - 60);
     noFill();
 
     let circulo = nuevoCirculo();
+
     if (circulo != null) {
         circulos.push(circulo);
         contador = 0;
     } else {
         contador++;
-        if (contador > 750) {
+        if (contador >= 750) {
             paleta = nuevaPaleta();
             circulos = [];
         }
     }
     lineas();
+    chequeaCrecimiento();
     for (let i = 0; i < circulos.length; i++) {
         circulos[i].dibuja();
     }
-    chequeaCrecimiento();
 }
 
 // Paleta
@@ -50,7 +55,7 @@ function nuevoCirculo() {
         ? new Circulo(
               centro.x,
               centro.y,
-              2,
+              ceil(random(3)),
               random(paleta.coloresPorCantidad())
           )
         : null;
@@ -59,7 +64,7 @@ function nuevoCirculo() {
 // boolean
 function esElNuevoCirculoValido(centroNuevoCirculo) {
     for (let circulo of circulos) {
-        if (centroNuevoCirculo.dist(circulo.centro) <= circulo.r + 5) {
+        if (centroNuevoCirculo.dist(circulo.centro) <= circulo.r + 4) {
             return false;
         }
     }
@@ -92,11 +97,14 @@ function lineas() {
 // void
 function chequeaCrecimiento() {
     for (let circulo of circulos) {
+        if (!circulo.creciendo) {
+            continue;
+        }
         for (let otroCirculo of circulos) {
             if (circulo != otroCirculo) {
                 if (
                     circulo.centro.dist(otroCirculo.centro) <=
-                    circulo.r + otroCirculo.r + 5
+                    circulo.r + otroCirculo.r + 7
                 ) {
                     circulo.creciendo = false;
                     break;
@@ -112,13 +120,7 @@ class Paleta {
         this.cant = cant;
     }
 
-    // int 0 - 360
-    hueMasAngulo(angulo) {
-        let resultante = floor(angulo + this.hue);
-        //console.log(resultante);
-        return resultante <= 360 ? resultante : resultante - 360;
-    }
-
+    // devuelve un numero entre 0 y 360
     entre360(angulo) {
         return angulo <= 360 ? angulo : angulo - 360;
     }
@@ -147,7 +149,6 @@ class Paleta {
 }
 
 class Circulo {
-    creciendo;
     constructor(x, y, r, color) {
         this.x = x;
         this.y = y;
